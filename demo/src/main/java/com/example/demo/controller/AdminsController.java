@@ -21,7 +21,6 @@ public class AdminsController {
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
     public AdminsController(UserService userService, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.roleService = roleService;

@@ -21,25 +21,9 @@ public class UsersController {
 
     private final UserService userService;
 
-    @Autowired
     public UsersController(UserService userService) {
         this.userService = userService;
     }
-
-//    @GetMapping("/registration")
-//    public String registrationPage(@ModelAttribute("user") User user) {
-//        return "/registration";
-//    }
-//
-//    @PostMapping("/registration")
-//    public String performRegistration(@ModelAttribute("user") User user)
-//    {
-//        Role role = new Role("ROLE_USER");
-//        roleService.saveRole(role);
-//        user.setRoles(Set.of(role));
-//        userService.saveUser(user);
-//        return "redirect:/login";
-//    }
 
     @GetMapping("/user")
     public String getUserPage(Model model,Principal principal) {
