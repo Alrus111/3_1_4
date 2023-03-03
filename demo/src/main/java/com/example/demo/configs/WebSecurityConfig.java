@@ -48,7 +48,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    // аутентификация inMemory
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

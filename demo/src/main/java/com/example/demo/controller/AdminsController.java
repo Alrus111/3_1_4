@@ -37,12 +37,6 @@ public class AdminsController {
         return "/admin";
     }
 
-//    @GetMapping("/new")
-//    public String getNewUserForm(@ModelAttribute("user") User user, Model model) {
-//        model.addAttribute("roles", roleService.getRoles());
-//        return "/new";
-//    }
-
     @PostMapping("/createNew")
     public String createUser(@ModelAttribute("user") User user,
                              @RequestParam(value = "nameRole") String nameRole) {
@@ -54,18 +48,10 @@ public class AdminsController {
         return "redirect:/admin";
     }
 
-//    @GetMapping("/{id}/edit")
-//    public String editUser(Model model, @PathVariable("id") Long id) {
-//        model.addAttribute("user", userService.getUserById(id));
-//        model.addAttribute("roles", roleService.getRoles());
-//        return "/edit";
-//    }
 
     @PatchMapping(value = "/{id}/edit")
     public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") Long id,
                              @RequestParam(value = "nameRole") String nameRole) {
-        if (user.getPassword().hashCode() != userService.getUserById(id).getPassword().hashCode())
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role role = new Role(nameRole);
         roleService.saveRole(role);

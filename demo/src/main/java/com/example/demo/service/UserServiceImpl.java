@@ -1,11 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,19 +10,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.Collection;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(EntityManager entityManager, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.entityManager = entityManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -60,6 +57,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     @Override
     public boolean updateUser(User updatedUser) {
+        if (updatedUser.getPassword().hashCode() != getUserById(updatedUser.getId()).getPassword().hashCode())
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         boolean checkUpdateUsername = false;
         if (userRepository.getUserByUsername(updatedUser.getUsername())==null)
             checkUpdateUsername = true;
@@ -76,15 +75,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getUserByUsername(username);
+        User user = entityManager.createQuery("select u from User u join fetch u.roles ", User.class).getResultList().get(0);
+
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User with %s not found", username));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                mapRolesToAuthorities(user.getRoles()));
+        return user;
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
 }
