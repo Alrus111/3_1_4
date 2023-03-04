@@ -5,7 +5,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Admin panel</title>
-	<link rel="shortcut icon" href="https://javastudy.ru/wp-content/uploads/2015/04/Spring-logo.jpeg" type="image/x-icon">
+	<link rel="shortcut icon" href="https://javastudy.ru/wp-content/uploads/2015/04/Spring-logo.jpeg"
+	      type="image/x-icon">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 	      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css">
@@ -120,8 +121,10 @@
 																<br/>
 																<label for="username" class="form-horizontal">Enter
 																	username</label>
-																<div class="col-12 text-center font-weight-light">(changing the name will cause a
-																	relogin)</div>
+																<div class="col-12 text-center font-weight-light">
+																	(changing the name will cause a
+																	relogin)
+																</div>
 																<input type="text" class="form-control"
 																       th:name="username"
 																       th:value="${user.getUsername()}" id="username"/>
@@ -161,7 +164,8 @@
 										        data-target="#exampleModal2" th:attrappend="data-target=${user.id}">
 											Delete
 										</button><!-- Modal Delete-->
-										<div class="modal fade" th:attrappend="id=${user.id}" id="exampleModal2" tabindex="-1"
+										<div class="modal fade" th:attrappend="id=${user.id}" id="exampleModal2"
+										     tabindex="-1"
 										     aria-labelledby="exampleModalLabel2"
 										     aria-hidden="true">
 											<div class="modal-dialog">
@@ -216,7 +220,8 @@
 																<br/>
 															</div>
 														</div>
-														<p class="text-center">if you delete the actual admin you will be logged out</p>
+														<p class="text-center">if you delete the actual admin you will
+															be logged out</p>
 														<div class="modal-footer">
 															<button type="button" class="btn btn-secondary"
 															        data-dismiss="modal">
@@ -246,11 +251,18 @@
 											<label for="name" class="form-horizontal ">Name</label>
 											<input type="text" class="form-control" placeholder="Введите name"
 											       th:field="*{name}" id="nameNew"/>
+											<td th:if="${#fields.hasAnyErrors()}" th:errors="*{name}">Name
+												Error
+											</td>
 										</div>
 										<div class="form-group">
 											<label for="lastname" class="form-horizontal">Lastname</label>
-											<input type="text" class="form-control" placeholder="Введите lastname"
-											       th:field="*{lastname}" id="lastnameNew"/>
+											<td><input type="text" class="form-control" placeholder="Введите lastname"
+											           th:field="*{lastname}"
+											           id="lastnameNew"/></td>
+											<td th:if="${#fields.hasAnyErrors()}" th:errors="*{lastname}">Name
+												Error
+											</td>
 										</div>
 										<div class="form-group">
 											<label for="username" class="form-horizontal">Username</label>

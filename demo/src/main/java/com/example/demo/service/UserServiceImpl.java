@@ -56,11 +56,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     @Override
-    public boolean updateUser(User updatedUser) {
-        if (updatedUser.getPassword().hashCode() != getUserById(updatedUser.getId()).getPassword().hashCode())
+    public boolean updateUser(User updatedUser, Long id) {
+        if (updatedUser.getPassword().hashCode() != getUserById(id).getPassword().hashCode())
             updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         boolean checkUpdateUsername = false;
-        if (userRepository.getUserByUsername(updatedUser.getUsername())==null)
+        if (userRepository.getUserByUsername(updatedUser.getUsername()) == null)
             checkUpdateUsername = true;
         userRepository.save(updatedUser);
         return checkUpdateUsername;
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = entityManager.createQuery("select u from User u join fetch u.roles ", User.class).getResultList().get(0);
+        User user = userRepository.getUserWithRole(username);
 
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User with %s not found", username));

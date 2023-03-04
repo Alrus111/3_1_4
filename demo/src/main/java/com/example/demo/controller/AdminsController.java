@@ -4,12 +4,14 @@ import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.xml.bind.ValidationException;
 import java.security.Principal;
 import java.util.Set;
 
@@ -19,12 +21,10 @@ public class AdminsController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AdminsController(UserService userService, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
+    public AdminsController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping()
@@ -38,26 +38,28 @@ public class AdminsController {
     }
 
     @PostMapping("/createNew")
-    public String createUser(@ModelAttribute("user") User user,
+    public String createUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                              @RequestParam(value = "nameRole") String nameRole) {
 
-        Role role = new Role(nameRole);
-        roleService.saveRole(role);
-        user.setRoles(Set.of(role));
-        userService.saveUser(user);
+        if (!bindingResult.hasErrors()) {
+            Role role = new Role(nameRole);
+            roleService.saveRole(role);
+            user.setRoles(Set.of(role));
+            userService.saveUser(user);
+        }
         return "redirect:/admin";
     }
 
 
     @PatchMapping(value = "/{id}/edit")
-    public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") Long id,
-                             @RequestParam(value = "nameRole") String nameRole) {
-
-        Role role = new Role(nameRole);
-        roleService.saveRole(role);
-        user.setRoles(Set.of(role));
-
-        if (userService.updateUser(user))
+    public String updateUser(@ModelAttribute("user") @Valid User user, @PathVariable("id") Long id,
+                             @RequestParam(value = "nameRole") String nameRole, BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            Role role = new Role(nameRole);
+            roleService.saveRole(role);
+            user.setRoles(Set.of(role));
+        }
+        if (userService.updateUser(user, id))
             return "redirect:/login";
         else
             return "redirect:/admin";
